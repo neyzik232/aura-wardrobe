@@ -97,4 +97,10 @@ npm run deploy
 
 ## 📄 License
 
-MIT — free to use and modify.
+MIT — neyzik232, 2026. gmail: neyzikhokage@gmail.com
+
+---
+
+## Author
+
+GitHub: https://github.com/neyzik232
