@@ -8,10 +8,7 @@ const LINKS = [
   { id: 'profile',     label: 'Profile' },
 ]
 
-/**
- * Sticky top nav with page links, dark-mode toggle, and CTA button.
- */
-export default function Navbar({ activePage, onNavigate, darkMode, onToggleDark }) {
+export default function Navbar({ activePage, onNavigate, darkMode, onToggleDark, user, onLogout, onOpenAuth }) {
   return (
     <motion.nav
       initial={{ y: -20, opacity: 0 }}
@@ -24,66 +21,47 @@ export default function Navbar({ activePage, onNavigate, darkMode, onToggleDark 
         background: 'rgba(250,250,250,0.85)',
         backdropFilter: 'blur(20px)',
         borderBottom: '1px solid var(--gray-200)',
-        transition: 'background 0.3s',
       }}
-      className="dark:!bg-[rgba(15,15,13,0.85)]"
     >
       {/* Logo */}
-      <button
-        onClick={() => onNavigate('landing')}
-        style={{
-          fontFamily: '"Cormorant Garamond", Georgia, serif',
-          fontSize: 24, fontWeight: 300, letterSpacing: 6,
-          textTransform: 'uppercase', background: 'none', border: 'none',
-          cursor: 'pointer', color: 'var(--black)',
-        }}
-      >
+      <button onClick={() => onNavigate('landing')} style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 24, fontWeight: 300, letterSpacing: 6, textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--black)' }}>
         AURA
       </button>
 
       {/* Links */}
       <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
         {LINKS.map(link => (
-          <button
-            key={link.id}
-            onClick={() => onNavigate(link.id)}
-            style={{
-              fontSize: 12, letterSpacing: 2, textTransform: 'uppercase',
-              cursor: 'pointer', color: activePage === link.id ? 'var(--black)' : 'var(--gray-700)',
-              border: 'none', background: 'none', padding: '4px 0',
-              borderBottom: activePage === link.id ? '1px solid var(--black)' : '1px solid transparent',
-              transition: 'color 0.2s, border-color 0.2s',
-            }}
-          >
+          <button key={link.id} onClick={() => onNavigate(link.id)} style={{
+            fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', cursor: 'pointer',
+            color: activePage === link.id ? 'var(--black)' : 'var(--gray-700)',
+            border: 'none', background: 'none', padding: '4px 0',
+            borderBottom: activePage === link.id ? '1px solid var(--black)' : '1px solid transparent',
+            transition: 'color 0.2s',
+          }}>
             {link.label}
           </button>
         ))}
 
-        {/* Dark mode toggle */}
-        <button
-          onClick={onToggleDark}
-          style={{
-            background: 'none', border: '1.5px solid var(--gray-200)',
-            borderRadius: 100, padding: '8px 16px', cursor: 'pointer',
-            fontSize: 12, display: 'flex', alignItems: 'center', gap: 6,
-            color: 'var(--black)', transition: 'var(--transition)',
-          }}
-        >
+        {/* Dark mode */}
+        <button onClick={onToggleDark} style={{ background: 'none', border: '1.5px solid var(--gray-200)', borderRadius: 100, padding: '8px 16px', cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6, color: 'var(--black)' }}>
           {darkMode ? '☀️' : '🌙'} Mode
         </button>
 
-        {/* CTA */}
-        <button
-          onClick={() => onNavigate('wardrobe')}
-          style={{
-            background: 'var(--black)', color: 'var(--white)',
-            padding: '10px 22px', borderRadius: 100,
-            fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase',
-            cursor: 'pointer', border: 'none', transition: 'var(--transition)',
-          }}
-        >
-          Open Wardrobe
-        </button>
+        {/* Auth */}
+        {user ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 12, color: 'var(--gray-500)', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {user.email}
+            </span>
+            <button onClick={onLogout} style={{ background: 'transparent', color: 'var(--black)', padding: '10px 22px', borderRadius: 100, fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase', cursor: 'pointer', border: '1.5px solid var(--gray-200)', transition: 'all 0.2s' }}>
+              Sign Out
+            </button>
+          </div>
+        ) : (
+          <button onClick={onOpenAuth} style={{ background: 'var(--black)', color: 'var(--white)', padding: '10px 22px', borderRadius: 100, fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase', cursor: 'pointer', border: 'none', transition: 'all 0.2s' }}>
+            Sign In
+          </button>
+        )}
       </div>
     </motion.nav>
   )

@@ -1,69 +1,61 @@
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { supabase } from '../lib/supabase'
 
-const LS_WARDROBE = 'aura_wardrobe'
-const LS_OUTFITS  = 'aura_outfits'
+export function useWardrobe(user) {
+  const [wardrobe, setWardrobe] = useState([])
+  const [outfits, setOutfits]   = useState([])
 
-function load(key) {
-  try { return JSON.parse(localStorage.getItem(key) || 'null') || [] }
-  catch { return [] }
-}
+  // Завантажуємо дані з Supabase коли юзер залогінений
+  useEffect(() => {
+    if (!user) return
+    fetchWardrobe()
+    fetchOutfits()
+  }, [user])
 
-/**
- * Central state hook — wardrobe items + saved outfits.
- * All reads/writes go through here so localStorage stays in sync.
- */
-export function useWardrobe() {
-  const [wardrobe, setWardrobe] = useState(() => load(LS_WARDROBE))
-  const [outfits,  setOutfits]  = useState(() => load(LS_OUTFITS))
+  async function fetchWardrobe() {
+    const { data } = await supabase.from('wardrobe').select('*').order('created_at', { ascending: false })
+    if (data) setWardrobe(data)
+  }
 
-  // ── Wardrobe ──────────────────────────────────────────────────────────────
-  const addItem = useCallback((item) => {
-    setWardrobe(prev => {
-      const next = [...prev, { ...item, id: Date.now().toString(), createdAt: new Date().toISOString() }]
-      localStorage.setItem(LS_WARDROBE, JSON.stringify(next))
-      return next
-    })
+  async function fetchOutfits() {
+    const { data } = await supabase.from('outfits').select('*').order('created_at', { ascending: false })
+    if (data) setOutfits(data)
+  }
+
+  const addItem = useCallback(async (item) => {
+    const { data, error } = await supabase.from('wardrobe').insert([{
+      ...item, user_id: user.id
+    }]).select()
+    if (!error && data) setWardrobe(prev => [data[0], ...prev])
+  }, [user])
+
+  const deleteItem = useCallback(async (id) => {
+    await supabase.from('wardrobe').delete().eq('id', id)
+    setWardrobe(prev => prev.filter(i => i.id !== id))
   }, [])
 
-  const deleteItem = useCallback((id) => {
-    setWardrobe(prev => {
-      const next = prev.filter(i => i.id !== id)
-      localStorage.setItem(LS_WARDROBE, JSON.stringify(next))
-      return next
-    })
+  const updateItem = useCallback(async (id, patch) => {
+    await supabase.from('wardrobe').update(patch).eq('id', id)
+    setWardrobe(prev => prev.map(i => i.id === id ? { ...i, ...patch } : i))
   }, [])
 
-  const updateItem = useCallback((id, patch) => {
-    setWardrobe(prev => {
-      const next = prev.map(i => i.id === id ? { ...i, ...patch } : i)
-      localStorage.setItem(LS_WARDROBE, JSON.stringify(next))
-      return next
-    })
-  }, [])
+  const saveOutfit = useCallback(async (outfit) => {
+    const { data, error } = await supabase.from('outfits').insert([{
+      ...outfit, user_id: user.id
+    }]).select()
+    if (!error && data) setOutfits(prev => [data[0], ...prev])
+  }, [user])
 
-  // ── Outfits ───────────────────────────────────────────────────────────────
-  const saveOutfit = useCallback((outfit) => {
-    setOutfits(prev => {
-      const next = [...prev, { ...outfit, id: Date.now().toString(), createdAt: new Date().toISOString() }]
-      localStorage.setItem(LS_OUTFITS, JSON.stringify(next))
-      return next
-    })
-  }, [])
+  const toggleFavorite = useCallback(async (id) => {
+    const outfit = outfits.find(o => o.id === id)
+    if (!outfit) return
+    await supabase.from('outfits').update({ favorited: !outfit.favorited }).eq('id', id)
+    setOutfits(prev => prev.map(o => o.id === id ? { ...o, favorited: !o.favorited } : o))
+  }, [outfits])
 
-  const toggleFavorite = useCallback((id) => {
-    setOutfits(prev => {
-      const next = prev.map(o => o.id === id ? { ...o, favorited: !o.favorited } : o)
-      localStorage.setItem(LS_OUTFITS, JSON.stringify(next))
-      return next
-    })
-  }, [])
-
-  const deleteOutfit = useCallback((id) => {
-    setOutfits(prev => {
-      const next = prev.filter(o => o.id !== id)
-      localStorage.setItem(LS_OUTFITS, JSON.stringify(next))
-      return next
-    })
+  const deleteOutfit = useCallback(async (id) => {
+    await supabase.from('outfits').delete().eq('id', id)
+    setOutfits(prev => prev.filter(o => o.id !== id))
   }, [])
 
   return { wardrobe, outfits, addItem, deleteItem, updateItem, saveOutfit, toggleFavorite, deleteOutfit }

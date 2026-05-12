@@ -82,3 +82,13 @@ body {
 }
 .animate-float      { animation: float 8s ease-in-out infinite; }
 .animate-float-slow { animation: float 11s ease-in-out infinite; animation-delay: 3s; }
+
+/* Dark mode navbar */
+body.dark nav {
+  background: rgba(15, 15, 13, 0.85) !important;
+  border-bottom-color: var(--gray-200) !important;
+}
+
+body.dark .nav-text {
+  color: var(--black);
+}
