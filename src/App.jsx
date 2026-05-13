@@ -13,6 +13,7 @@ import Auth        from './pages/Auth'
 import { useWardrobe } from './hooks/useWardrobe'
 import { useToast }    from './hooks/useToast'
 import { supabase }    from './lib/supabase'
+import Onboarding      from './components/Onboarding'
 
 const PAGE_TRANSITION = {
   initial:  { opacity: 0, y: 16 },
@@ -28,7 +29,8 @@ export default function App() {
   const [darkMode, setDark]     = useState(() => localStorage.getItem('aura_dark') === 'true')
   const [user, setUser]         = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
-  const [showAuth, setShowAuth] = useState(false)
+  const [showAuth, setShowAuth]           = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
 
   const { wardrobe, outfits, addItem, deleteItem, saveOutfit, toggleFavorite, deleteOutfit } = useWardrobe(user)
   const { toasts, toast } = useToast()
@@ -70,8 +72,13 @@ export default function App() {
   function handleLogin(u) {
     setUser(u)
     setShowAuth(false)
-    toast('Ласкаво просимо ✦')
-    setPage('wardrobe')
+    const isNew = !localStorage.getItem('aura_onboarded')
+    if (isNew) {
+      setShowOnboarding(true)
+    } else {
+      toast('Ласкаво просимо ✦')
+      setPage('wardrobe')
+    }
   }
 
   if (authLoading) return (
@@ -112,6 +119,12 @@ export default function App() {
               <Auth onLogin={handleLogin} onClose={() => setShowAuth(false)} />
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showOnboarding && (
+          <Onboarding onComplete={() => { setShowOnboarding(false); toast('Ласкаво просимо ✦'); setPage('wardrobe') }} />
         )}
       </AnimatePresence>
 

@@ -27,13 +27,13 @@ export default function Wardrobe({ wardrobe, onAdd, onDelete, toast }) {
   return (
     <>
       {/* Header */}
-      <div style={{ padding: '40px 60px 0' }}>
+      <div className="wardrobe-header" style={{ padding: '40px 60px 0' }}>
         <h1 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 56, fontWeight: 300, letterSpacing: -1 }}>My Wardrobe</h1>
         <p style={{ color: 'var(--gray-700)', fontSize: 14, marginTop: 8 }}>{wardrobe.length} item{wardrobe.length !== 1 ? 's' : ''}</p>
       </div>
 
       {/* Toolbar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '28px 60px', flexWrap: 'wrap' }}>
+      <div className="wardrobe-toolbar" style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '28px 60px', flexWrap: 'wrap' }}>
         {/* Search */}
         <div style={{ position: 'relative', flex: 1, minWidth: 200, maxWidth: 360 }}>
           <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 16 }}>🔍</span>
@@ -73,7 +73,7 @@ export default function Wardrobe({ wardrobe, onAdd, onDelete, toast }) {
       </div>
 
       {/* Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 20, padding: '0 60px 80px' }}>
+      <div className="wardrobe-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 16, padding: '0 60px 80px' }}>
         <AnimatePresence>
           {filtered.length === 0 ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '100px 40px' }}>

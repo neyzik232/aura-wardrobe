@@ -22,3 +22,24 @@ export async function getUser() {
   const { data: { user } } = await supabase.auth.getUser()
   return user
 }
+
+// Скидання пароля
+export async function resetPassword(email) {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://neyzik232.github.io/aura-wardrobe',
+  })
+  return { data, error }
+}
+
+// Google OAuth
+export async function signInWithGoogle() {
+  const isProd = window.location.hostname !== 'localhost'
+  const redirectTo = isProd
+    ? 'https://neyzik232.github.io/aura-wardrobe'
+    : `${window.location.origin}/aura-wardrobe`
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo },
+  })
+  return { data, error }
+}

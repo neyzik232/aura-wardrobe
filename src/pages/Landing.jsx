@@ -37,7 +37,7 @@ export default function Landing({ onNavigate }) {
       </section>
 
       {/* Features */}
-      <section style={{ padding: '100px 60px', background: 'var(--gray-100)' }}>
+      <section className="landing-features" style={{ padding: '100px 60px', background: 'var(--gray-100)' }}>
         <p style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', color: 'var(--gray-500)', marginBottom: 16 }}>Everything you need</p>
         <h2 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 'clamp(40px, 5vw, 72px)', fontWeight: 300, lineHeight: 1, marginBottom: 60 }}>
           Your fashion,<br />all in one place.
@@ -62,7 +62,7 @@ export default function Landing({ onNavigate }) {
       </section>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--gray-200)' }}>
+      <div className="landing-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--gray-200)' }}>
         {STATS.map(s => (
           <div key={s.num} style={{ background: 'var(--white)', padding: '60px 40px', textAlign: 'center' }}>
             <div style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 72, fontWeight: 300, lineHeight: 1 }}>{s.num}</div>
